@@ -26,7 +26,7 @@ p{
 <br>
 <h1> 0. Overview </h1>
 <p>
-We use the transfer learning to take advantage of an existing pre-trained classifier, and then fine tune it to handle a different and more difficult task[1]. The dataset we choose it the painting dataset from the Visual Geometry Group, Department of Engineering Science, University of Oxford [2]. The dataset covers ten of the common categories that presented in the PASCAL VOC, and we only choose five classes of them: aeroplane, bird, boat, cow, and train. The training dataset has 2,312 images and the test dataset has 100 images.
+We use the transfer learning to take advantage of an existing pre-trained classifier, and then fine tune it to handle a different and more difficult task[1]. The dataset we choose it the painting dataset from the Visual Geometry Group, Department of Engineering Science, University of Oxford [2]. The dataset covers ten of the common categories that presented in the PASCAL VOC, and we only choose five classes of them: aeroplane, bird, boat, cow, and train. The training dataset has 4,002 images and the testing dataset has 100 images. The training set do not have equal weight of each classes but the testing has the equal separation of each classes. 
 </p>
 <p>
 Unlike object detection in true life, object detection in art paintings is even more chanllenging, given the substantial differences between paintings and natural images, and variations in depiction of objects in paintings. Paintings vary considerably in depiction style from photo-realistic renderings through particular movements (e.g. impressionism, pointillism -- which are almost designed to disrupt the fine scale measurement of local gradients in a HOG or SIFT feature) to more abstract depictions (Fauvism, Cubism) [4]. I list the a part of my dataset here, from which you can see the great differences with the true objects in the photography.
@@ -148,8 +148,10 @@ Some of the mis-classified images are hard to judge even for human eyes, as I li
 <p>
 An interesting thing is that, the realistic styled paintings are always correctly classified in CNN, and the abstract styled paintings have the wrong classification result. As stated above, some abstract styled paintings may destroy the key feature in the object detection task, which makes the CNN do not work. In two classes classification between plane and boat, some of the plane paintings are tended to be recognized as boat, but none of the boat images in the test set are recognized as planes. The reason may be the unbalanced training set, which contains more boat images than aerplane images. 
 </p>
-
-
+<h1> 3. Conclusion </h1>
+<p>
+From the project, we learnt how to transfer the existing pretrained CNN to handle new problems. At the beginning, we tried to train a CNN from scratch, which takes a long time with only CPU. Training from the last layer is really time-saving. According to [1], it can also reach a reasonable result in some cases. If the features of the images in the new problem is similar to that of the old problem, transfer learning can do a good job.
+</p>
 <h1> References:</h1>
 <p>[1] Sharif Razavian, A., Azizpour, H., Sullivan, J., & Carlsson, S. (2014). <b>CNN features off-the-shelf: an astounding baseline for recognition.</b> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops (pp. 806-813).</p>
 
