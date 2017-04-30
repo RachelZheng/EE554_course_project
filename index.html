@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-size:30px;
+    margin-right: 200px;
+	margin-left: 200px;
+}
+
+p{
+	margin-right: 50px;
+	margin-left: 50px;
+}
+
+
+</style>
+</head>
+<body>
+
+<h1 align="center">Project 2 report for EE 554</h1>
+
+<br>
+<p align="center">Project member: Xuelu Li, Xinye Zheng</p>
+<p align="center">April 30, 2017</p>
+<br>
+<h1> 0. Overview </h1>
+<p>
+We use the transfer learning to take advantage of an existing pre-trained classifier, and then fine tune it to handle a different and more difficult task[1]. The dataset we choose it the painting dataset from the Visual Geometry Group, Department of Engineering Science, University of Oxford [2]. The dataset covers ten of the common categories that presented in the PASCAL VOC, and we only choose five classes of them: aeroplane, bird, boat, cow, and train. The training dataset has 2,312 images and the test dataset has 100 images.
+</p>
+<p>
+Unlike object detection in true life, object detection in art paintings is even more chanllenging, given the substantial differences between paintings and natural images, and variations in depiction of objects in paintings. Paintings vary considerably in depiction style from photo-realistic renderings through particular movements (e.g. impressionism, pointillism -- which are almost designed to disrupt the fine scale measurement of local gradients in a HOG or SIFT feature) to more abstract depictions (Fauvism, Cubism) [4]. I list the a part of my dataset here, from which you can see the great differences with the true objects in the photography.
+</p>
+<center>
+<table class="image">
+	<tr><td><img src="img/airplane.jpg" style="height:256px;"></td>
+		<td><img src="img/bird.jpg" style="height:256px;"></td>
+		<td><img src="img/boat.jpg" style="height:256px;"></td>
+	</tr>
+	<tr><td class="caption" align="center">plane</td>
+		<td class="caption" align="center">bird</td>
+		<td class="caption" align="center">boat</td>
+		
+	</tr>
+</table>
+<table>
+	<tr>
+		<td><img src="img/cow.jpg" style="height:256px;"></td>
+		<td><img src="img/train.jpg" style="height:256px;"></td>
+	</tr>
+	<tr>
+		<td class="caption" align="center">cow</td>
+		<td class="caption" align="center">train</td>
+	</tr>
+	<caption align="bottom">Figure 1: Sample images in the dataset.</caption>
+</table>
+</center>
+<p>
+The model I used is the Fast (CNN-F) architecture in [3], which contains 8 learnable layers, 5 of which are convolutional, and the last 3 are fully-connected. The input image size is 224 x 224, and we will get a 1,000 dimension normalized scores for 1,000 classes of objects. The computational environment of this project is the Matconvnet package in Matlab 2016b. We tried the first two methods of the given examples. Even the result accuracy is not high, it can be explained due to the high complexity in this problem.
+</p>
+
+<center>
+<figure>
+  <img src="img/model.png" alt="The model" width="900">
+  <figcaption>Figure 2: Methods how you transform a pretrained CNN into a classifier</figcaption>
+</figure>
+</center>
+
+<h1> 1. Extract a result vector to train a SVM </h1>
+<p>
+We first directly use the output result from the pretrained CNN, and then use these output probabilities to train a multiclass models for support vector machines. The input is the 1,000 dimension of probability scores of each one image, and the output is the predicted class among the five new classes of the image. We use the Matlab function fitcecoc to set up the multi-class SVM model, and get the final accuracy at 43.0%. We extract the first layer weights from CNN as the figure 3 shows.
+</p>
+<center>
+<figure>
+  <img src="img/first-layer-weight.png" alt="first-layer" width="900">
+  <figcaption>Figure 3: The weight of the first layer in CNN</figcaption>
+</figure>
+</center>
+<p>
+When we look back into the incorrectly classified images, we found some of the images are really hard to be recognized. They are not in the attention focus of the image (like the figure 4.2 and figure 4.3), or they do not have clear color/boundary/texture features as the object detection with in the photos (like the figure 4.1, figure 4.4, and figure 4.5). This may comes from the large differences between the image styles. Compared with the random guess accuracy 20%, the SVM based on CNN does have some effects.
+</p>
+<p>
+	<center>
+	<table class="image">
+		<tr><td><img src="img/misplane.jpg" style="height:256px;"></td>
+			<td><img src="img/misbird.jpg" style="height:256px;"></td>
+			<td><img src="img/misboat.jpg" style="height:256px;"></td>
+		</tr>
+		<tr><td class="caption" align="center">plane</td>
+			<td class="caption" align="center">bird</td>
+			<td class="caption" align="center">boat</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td><img src="img/miscow.jpg" style="height:256px;"></td>
+			<td><img src="img/mistrain.jpg" style="height:256px;"></td>
+		</tr>
+		<tr>
+			<td class="caption" align="center">cow</td>
+			<td class="caption" align="center">train</td>
+		</tr>
+		<caption align="bottom">Figure 4: sample misclassified images in the dataset. The subtitles are their labels.</caption>
+	</table>
+	</center>
+</p>
+<h1> 2. Retrain the final fully-connect layer </h1>
+<p>
+In this model, we extract the 4,096 dimensional feature vector from the layer 20. We trained a new fully-connect layer and the softmax layer. Multi-classes classification needs more data to have a good result, so we only choose two classes among the painting object detection dataset: boat and aerplane.
+</p>
+<center>
+<figure>
+  <img src="img/fc.png" alt="fully-connect-layer" width="900">
+  <figcaption>Figure 5: The retrained fully-connect layer and softmax layer.</figcaption>
+</figure>
+</center>
+<p>
+The function in Matlab we use is patternnet. Because we only have two classes of images, we set the hidden nodes to be 2. In each iteration, we randomly set 70% of the data to be training set, 15% to be cross-validation set, and 15% to be the testing set. Besides that, I have another 40 images to be the testing set, which will not be used in the training process. The optimization goal is set to be cross-entropy, and the training is based on the scaled conjugate gradient. After 48 iterations, the layer is trained to be converged. The accuracy of the training set is 97.5%, and the accuracy on the external test set is 75%. The error rate changes in the training process see Figure 6.
+</p>
+<center>
+<figure>
+  <img src="img/errorrate.png" alt="errorrate" width="850">
+  <figcaption>Figure 6: The error rate changes with iterations. Blue: training; yellow: cross-validation; red: testing.</figcaption>
+</figure>
+</center>
+<p>
+Some of the mis-classified images are hard to judge even for human eyes, as I list here in Figure 7.
+</p>
+<p>
+	<center>
+	<table class="image">
+		<tr>
+			<td><img src="img/airplane_test_c1.jpg" style="height:256px;"></td><td></td>
+			<td><img src="img/airplane_test_c2.jpg" style="height:256px;"></td><td></td>
+			<td><img src="img/airplane_test_c3.jpg" style="height:256px;"></td>
+		</tr>
+	</table>
+	<table>
+		<tr>	
+			<td><img src="img/airplane_test_1.jpg" style="height:256px;"></td><td></td>
+			<td><img src="img/airplane_test_2.jpg" style="height:256px;"></td><td></td>
+			<td><img src="img/airplane_test_3.jpg" style="height:256px;"></td>
+		</tr>
+		<caption align="bottom">Figure 7: sample plane images in the test dataset. The first line has the correct classification as plane, and the second line has the wrong classification result.</caption>
+	</table>
+	</center>
+</p>
+<p>
+An interesting thing is that, the realistic styled paintings are always correctly classified in CNN, and the abstract styled paintings have the wrong classification result. As stated above, some abstract styled paintings may destroy the key feature in the object detection task, which makes the CNN do not work. In two classes classification between plane and boat, some of the plane paintings are tended to be recognized as boat, but none of the boat images in the test set are recognized as planes. The reason may be the unbalanced training set, which contains more boat images than aerplane images. 
+</p>
+
+
+<h1> References:</h1>
+<p>[1] Sharif Razavian, A., Azizpour, H., Sullivan, J., & Carlsson, S. (2014). <b>CNN features off-the-shelf: an astounding baseline for recognition.</b> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops (pp. 806-813).</p>
+
+<p>[2] http://www.robots.ox.ac.uk/~vgg/data/paintings/</p>
+
+<p>[3] Chatfield, K., Simonyan, K., Vedaldi, A., & Zisserman, A. (2014). <b>Return of the devil in the details: Delving deep into convolutional nets. </b>arXiv preprint arXiv:1405.3531.</p>
+
+<p>[4] Crowley, E., & Zisserman, A. (2014, September). <b>The State of the Art: Object Retrieval in Paintings using Discriminative Regions.</b> In BMVC.</p>
+
+Last update: April 30, 2017
+
+</body>
+</html>
