@@ -56,7 +56,7 @@ Unlike object detection in true life, object detection in art paintings is even 
 </table>
 </center>
 <p>
-The model I used is the Fast (CNN-F) architecture in [3], which contains 8 learnable layers, 5 of which are convolutional, and the last 3 are fully-connected. The input image size is 224 x 224, and we will get a 1,000 dimension normalized scores for 1,000 classes of objects. The computational environment of this project is the Matconvnet package in Matlab 2016b. We tried the first two methods of the given examples. Even the result accuracy is not high, it can be explained due to the high complexity in this problem.
+The model I used is the <b>Fast (CNN-F) architecture</b> in [3], which contains 8 learnable layers, 5 of which are convolutional, and the last 3 are fully-connected. The input image size is 224 x 224, and we will get a 1,000 dimension normalized scores for 1,000 classes of objects. We did try other methods like CNN-M in the same paper, and fast R-CNN in [5]. The accuracy looks similar, and the CNN-F runs fast, so we chose CNN-F as our pretrained CNN. The computational environment of this project is the Matconvnet package in Matlab 2016b. We tried the first two methods of the given examples. Even the result accuracy is not high, it can be explained due to the high complexity in this problem.
 </p>
 
 <center>
@@ -152,6 +152,9 @@ An interesting thing is that, the realistic styled paintings are always correctl
 <p>
 From the project, we learnt how to transfer the existing pretrained CNN to handle new problems. At the beginning, we tried to train a CNN from scratch, which takes a long time with only CPU. Training from the last layer is really time-saving. According to [1], it can also reach a reasonable result in some cases. If the features of the images in the new problem is similar to that of the old problem, transfer learning can do a good job.
 </p>
+<p>
+This project has been a great learning experience for the both of us. First of all, it is a good supplement of the CNN knowledge for the class. First of all, some of the technique details, like how to set learning rate, number of nodes or which CNN network will do better in that specific problem is not covered in the lecture. These things actually need our effort to try our own. Secondly, we do not know much details about the transform learning, and we suspect it will really reaches a high accuracy. After reading the reference papers and doing the experiment on our own, the result is satisfactory. It does show the power of CNN. Finally, it did open a new pathway for our research. As far as I am concerned (Xinye), I know the basic idea of doing a simple CNN, and I will try to combine the next multimedia image research project with CNN because it is truly a powerful tool.
+</p>
 <h1> References:</h1>
 <p>[1] Sharif Razavian, A., Azizpour, H., Sullivan, J., & Carlsson, S. (2014). <b>CNN features off-the-shelf: an astounding baseline for recognition.</b> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops (pp. 806-813).</p>
 
@@ -160,7 +163,8 @@ From the project, we learnt how to transfer the existing pretrained CNN to handl
 <p>[3] Chatfield, K., Simonyan, K., Vedaldi, A., & Zisserman, A. (2014). <b>Return of the devil in the details: Delving deep into convolutional nets. </b>arXiv preprint arXiv:1405.3531.</p>
 
 <p>[4] Crowley, E., & Zisserman, A. (2014, September). <b>The State of the Art: Object Retrieval in Paintings using Discriminative Regions.</b> In BMVC.</p>
-
+<p>[5] Ren, S., He, K., Girshick, R., & Sun, J. (2015). Faster r-cnn: Towards real-time object detection with region proposal networks. In Advances in neural information processing systems (pp. 91-99).
+</p>
 Last update: April 30, 2017
 
 </body>
